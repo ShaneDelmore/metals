@@ -34,21 +34,22 @@ object RenameProvider extends LazyLogging {
           params.position.character
         )
         symbol = Symbol(reference.symbol)
-        if {
-          symbol match {
-            case _: Symbol.Local => true
-            case _ =>
-              showMessage.warn(
-                s"Rename for global symbol $symbol is not supported yet. " +
-                  s"Only local symbols can be renamed."
-              )
-              false
-          }
-        }
+//        if {
+//          symbol match {
+//            case _: Symbol.Local => true
+//            case _ =>
+//              showMessage.warn(
+//                s"Rename for global symbol $symbol is not supported yet. " +
+//                  s"Only local symbols can be renamed."
+//              )
+//              false
+//          }
+//        }
         position <- reference.referencePositions(true)
       } yield {
-        TextEdit(position.toLocation.range, newName)
+        position.uri -> TextEdit(position.toLocation.range, newName)
       }
+      val groupedEdits = edits.groupBy(_._1).map(_)
       // NOTE(olafur) uri.value is hardcoded here because local symbols
       // cannot be references across multiple files. When we add support for
       // renaming global symbols then this needs to change.
